@@ -1,6 +1,6 @@
 <?php
 
-namespace OptimistDigital\NovaSimpleRepeatable;
+namespace Outl1ne\NovaSimpleRepeatable;
 
 use Exception;
 use Laravel\Nova\Nova;
@@ -8,13 +8,17 @@ use Laravel\Nova\Fields\Field;
 use Illuminate\Support\Collection;
 use Laravel\Nova\PerformsValidation;
 use Laravel\Nova\Fields\FieldCollection;
+use Laravel\Nova\Fields\SupportsDependentFields;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use ReflectionMethod;
 
+/**
+ * @method static static make(mixed $name, string|\Closure|callable|object|null $attribute = null, array|null $fields = null)
+ */
 class SimpleRepeatable extends Field
 {
-    use PerformsValidation;
+    use PerformsValidation, SupportsDependentFields;
 
     public $component = 'simple-repeatable';
 
@@ -29,6 +33,7 @@ class SimpleRepeatable extends Field
         $this->canAddRows(true);
         $this->canDeleteRows(true);
         $this->hideFromIndex();
+        $this->addRowLabel(__('simpleRepeatable.addRow'));
     }
 
     public function fields($fields = [])
@@ -54,6 +59,28 @@ class SimpleRepeatable extends Field
     public function canDeleteRows($canDeleteRows = true)
     {
         return $this->withMeta(['canDeleteRows' => $canDeleteRows]);
+    }
+
+    public function addRowLabel($label)
+    {
+        return $this->withMeta(['addRowLabel' => $label]);
+    }
+
+    /*
+     * Transforms repeater values to JSON instead FormData.
+     * Used in cases when you have thousands of rows and you want to avoid max input vars defined in php conf.
+     *
+     * Currently disabled, calling this will do nothing
+     */
+    public function json()
+    {
+        return $this->withMeta(['convertFormDataToJson' => true]);
+    }
+
+    protected function isJson()
+    {
+        if (empty($this->meta['convertFormDataToJson'])) return false;
+        return $this->meta['convertFormDataToJson'];
     }
 
     /**
@@ -84,7 +111,7 @@ class SimpleRepeatable extends Field
             $value = json_decode($value, true);
 
             // Do validation
-            $this->resource = $request->findModelOrFail();
+            if ($request->resourceId) $this->resource = $request->findModelOrFail();
 
             // Explicity resolve fields to get valid nova-translatable rules
             $this->fields->each->resolve($request);

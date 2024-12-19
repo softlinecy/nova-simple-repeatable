@@ -1,6 +1,6 @@
 <?php
 
-namespace OptimistDigital\NovaSimpleRepeatable;
+namespace Outl1ne\NovaSimpleRepeatable;
 
 use JsonSerializable;
 use Laravel\Nova\Fields\Field;
@@ -65,7 +65,7 @@ class Row implements JsonSerializable
         return $field;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'fields' => $this->fields->jsonSerialize(),

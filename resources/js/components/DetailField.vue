@@ -1,36 +1,24 @@
 <template>
-  <panel-item :field="field" class="simple-repeatable detail-field">
-    <template slot="value">
-      <!-- Title columns -->
-      <div v-if="field.rows.length" class="simple-repeatable-header-row flex border-b border-40 py-2">
-        <div v-for="(rowField, i) in fields" :key="i" class="font-bold text-90 text-md w-full ml-3 flex">
-          {{ rowField.name }}
-
-          <!--  If field is nova-translatable, render seperate locale-tabs   -->
-          <nova-translatable-locale-tabs
-            style="padding: 0"
-            class="ml-auto"
-            v-if="rowField.component === 'translatable-field'"
-            :locales="rowField.formattedLocales"
-            :display-type="rowField.translatable.display_type"
-            :active-locale="activeLocales[i] || rowField.formattedLocales[0].key"
-            @tabClick="locale => setAllLocales(`sr-${field.attribute}-${rowField.originalAttribute}`, locale)"
-            @doubleClick="locale => setAllLocales(void 0, locale)"
-          />
-        </div>
-      </div>
-
-      <div class="overflow-hidden relative rounded-lg bg-white shadow border border-60" v-if="values && values.length">
-        <table class="table w-full table-default nova-resource-table">
+  <PanelItem :index="index" :field="field" class="simple-repeatable detail-field">
+    <template #value>
+      <div
+        class="o1-overflow-hidden o1-relative o1-rounded-lg o1-shadow o1-border o1-border-slate-200 dark:o1-border-slate-600 bg-white dark:o1-bg-slate-800"
+        v-if="values && values.length"
+      >
+        <table class="o1-table o1-w-full o1-table-default nova-resource-table">
           <thead>
-            <tr>
+            <tr class="o1-border-b o1-border-slate-200 dark:o1-border-slate-600">
               <th v-for="(header, i) in headers" :key="i">{{ header.name }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, i) of field.rows" :key="i" class="simple-repeatable-table-row">
+            <tr
+              v-for="(row, i) of field.rows"
+              :key="i"
+              class="simple-repeatable-table-row odd:o1-bg-slate-50 hover:o1-bg-slate-100 dark:odd:o1-bg-slate-700 dark:hover:o1-bg-slate-600"
+            >
               <td
-                class="font-mono text-sm simple-repeatable-detail-field-wrapper"
+                class="o1-font-mono o1-text-sm simple-repeatable-detail-field-wrapper"
                 style="height: 2rem"
                 v-for="(rowField, j) in row.fields"
                 :key="j"
@@ -39,7 +27,7 @@
                   :key="j"
                   :is="`detail-${rowField.component}`"
                   :field="rowField"
-                  class="mr-3"
+                  class="o1-mr-3"
                   :unique-id="getUniqueId(field, rowField)"
                 />
               </td>
@@ -50,14 +38,14 @@
 
       <div v-else>{{ (value && value.label) || '—' }}</div>
     </template>
-  </panel-item>
+  </PanelItem>
 </template>
 
 <script>
 import HandlesRepeatable from '../mixins/HandlesRepeatable';
 
 export default {
-  props: ['resource', 'resourceName', 'resourceId', 'field'],
+  props: ['index', 'resource', 'resourceName', 'resourceId', 'field'],
 
   mixins: [HandlesRepeatable],
 
@@ -176,14 +164,6 @@ export default {
   .simple-repeatable-table-row {
     td {
       padding: 4px 8px;
-    }
-
-    &:nth-child(even) {
-      background-color: rgb(244, 247, 250);
-    }
-
-    &:hover td {
-      background-color: rgba(65, 154, 220, 0.1) !important;
     }
   }
 }

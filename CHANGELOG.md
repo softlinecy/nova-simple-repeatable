@@ -5,166 +5,78 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.4.1] - 2021-10-01
+## [2.2.3] - 15-02-2024
 
 ### Changed
 
-- Fixed form view styles leaking to detail view
+- Allow specifying field custom width using `->withMeta(['nsrWidth' => '60px'])`
 - Updated packages
 
-## [1.4.0] - 2021-08-17
+## [2.2.2] - 17-10-2023
 
 ### Changed
 
-- Improved `nova-translatable` support (changing locale won't change whole pages locale anymore)
-- Updated packages
+- Currently disabled any logic regarding to FormData update. Needs more thorough testing for it to be stable.
 
-## [1.3.7] - 2021-07-15
-
-### Changed
-
-- Style fixes
-- Updated packages
-
-## [1.3.6] - 2021-06-22
-
-### Changed
-
-- Improved support for `nova-translatable` inside `nova-flexible-content`
-- Updated packages
-
-## [1.3.5] - 2021-05-26
-
-### Changed
-
-- Improved support for `nova-translatable`
-
-## [1.3.4] - 2021-05-26
-
-### Changed
-
-- Improved support for `nova-translatable`
-- Updated packages
-
-## [1.3.3] - 2021-05-14
-
-### Changed
-
-- Fixed validation inside `nova-flexible-content`
-
-## [1.3.2] - 2021-05-12
-
-### Changed
-
-- Fixed `nova-translatable` rules not being transformed when creating errors
-- Updated packages
-
-## [1.3.1] - 2021-05-11
-
-### Changed
-
-- Fixed issues with error displaying
-- Fixed a rare UI issue with `nova-flexible-content`
-- Updated packages
-
-## [1.3.0] - 2021-05-07
-
-### Changed
-
-- Hide header row with titles when there's no rows added yet
-- Fix underlying fields that are supposed to return an array or an object returning a string instead
-- Fixed issue with validation crashing in some cases
-- Fixed fields returning `formData[i]` arrays not being saved
-- Render detail fields on detail view (let's see how well this goes, might rollback later)
-- Updated packages
-
-## [1.2.5] - 2021-03-16
-
-### Changed
-
-- Fixed nova-translatable support broken since [1.2.4].
-
-## [1.2.4] - 2021-02-19
-
-### Changed
-
-- Published translations for faster localization (thanks to [@eimantaaas](https://github.com/eimantaaas))
-- Hide table header for hidden fields (thanks to [@thefilip](https://github.com/thefilip))
-- Updated packages
-
-## [1.2.3] - 2021-02-08
-
-### Changed
-
-- Added `Collection` import to `SimpleRepeatable`
-
-## [1.2.2] - 2021-02-08
-
-### Changed
-
-- Fixed `resolveUsing` not being used when resolving the value
-- Updated packages
-
-## [1.2.1] - 2021-01-28
-
-### Changed
-
-- Small styling fixes
-
-## [1.2.0] - 2021-01-28
+## [2.2.1] - 20-09-2023
 
 ### Added
 
-- Added `minRows` config option [Artexis10](https://github.com/Artexis10)
-- Initializes the minimum amount of rows defined by user [Artexis10](https://github.com/Artexis10)
-- Added [nova-translatable](https://github.com/optimistdigital/nova-translatable) support
+- `json()` method to field that allows sending data in JSON format instead FormData.
 
-### Changed
+### Fixed
 
-- Reworked `SimpleRepeatable` to resolve each row field's values.
+- Validation error display when one or more rows were deleted. [Issue description](https://github.com/outl1ne/nova-simple-repeatable/issues/52)
+- Fixed dark mode recognition
+- Fixed UI misalignment issues
 
-## [1.1.2] - 2021-01-18
-
-### Changed
-
-- Fixed `maxRows` not working
-- Fixed field width (again)
-- Updated packages
-
-## [1.1.1] - 2021-01-07
-
-### Changed
-
-- Hide from Index view by default
-- Fixed detail field rendering a table even when there's no values
-- Updated packages
-
-## [1.1.0] - 2021-01-06
+## [2.2.0] - 03-07-2023
 
 ### Added
 
-- Validation support
-- Detail field
-
-## [1.0.3] - 2021-01-04
+- Return type annotations for some methods that are now required by Nova.
 
 ### Changed
 
-- Fixed field width (again)
+- Format that data is sent to Nova is now FormData instead of JSON.
 
-## [1.0.2] - 2021-01-04
+### Fixed
+
+- Fixed sorting of locales present for field inside repeater.
+- Fixed unique attribute names to match validation errors returned by Nova.
+- Fixed asterisk display for required fields.
+
+## [2.1.0] - 21-07-2022
+
+### Added
+
+- Simple repeatable field now supports dependsOn. (thanks to [@mlopezsti](https://github.com/mlopezsti))
+
+**NB! This does not include the fields inside SimpleRepeatable, only the SimpleRepeatable field itself.**
+
+## [2.0.2] - 19-06-2022
 
 ### Changed
 
-- Fixed field width
+- Removed throwing "Not found" exception when resourceId is missing from fill request
+  - Temporary solution to bypass validation support for `outl1ne/nova-page-manager`
 
-## [1.0.1] - 2021-01-04
+## [2.0.1] - 09-06-2022
 
 ### Changed
 
-- Fixed cases where the field label was not removed from some fields
+- Fixed case where deleting a row would always delete the first item
+- Fixed locale switching not working when starting with no rows
 - Updated packages
 
-## [1.0.0] - 2020-12-18
+## [2.0.0] - 26-05-2022
 
-Initial release.
+### Added
+
+- Nova 4.0 support (huge thanks to [@emilianotisato](https://github.com/emilianotisato))
+
+### Changed
+
+- Renamed namespace from OptimistDigital to Outl1ne
+- Dropped Nova 3.X support
+- Dropped PHP 7.X support

@@ -1,16 +1,29 @@
 <template>
-  <default-field :field="field" :errors="errors" :show-help-text="showHelpText" class="simple-repeatable form-field">
-    <template slot="field">
-      <div class="flex flex-col">
+  <DefaultField
+    :field="currentField"
+    :errors="errors"
+    :show-help-text="showHelpText"
+    class="simple-repeatable form-field"
+  >
+    <template #field>
+      <div class="flex flex-col" v-bind="extraAttributes">
         <!-- Title columns -->
-        <div v-if="rows.length" class="simple-repeatable-header-row flex border-b border-40 py-2">
-          <div v-for="(rowField, i) in fields" :key="i" class="font-bold text-90 text-md w-full ml-3 flex">
+        <div v-if="rows.length" class="mb-1 o1-w-full o1-flex o1-border-b o1-py-2 dark:o1-border-slate-600">
+          <div
+            v-for="(rowField, i) in fields"
+            :key="i"
+            class="o1-font-bold o1-text-90 o1-text-md o1-w-full o1-ml-3 o1-flex"
+            :style="{ maxWidth: rowField.nsrWidth || null }"
+          >
             {{ rowField.name }}
+            <span v-if="rowField.required" class="o1-text-red-500 o1-text-sm o1-pl-1">
+              {{ __('*') }}
+            </span>
 
-            <!--  If field is nova-translatable, render seperate locale-tabs   -->
+            <!--  If field is nova-translatable, render separate locale-tabs   -->
             <nova-translatable-locale-tabs
               style="padding: 0"
-              class="ml-auto"
+              class="o1-ml-auto"
               v-if="rowField.component === 'translatable-field'"
               :locales="rowField.formattedLocales"
               :display-type="rowField.translatable.display_type"
@@ -22,68 +35,78 @@
           </div>
         </div>
 
-        <draggable v-model="rows" handle=".vue-draggable-handle">
-          <div
-            v-for="(row, i) in rows"
-            :key="row[0].attribute"
-            class="simple-repeatable-row flex py-3 pl-3 relative rounded-md"
-          >
-            <div class="vue-draggable-handle flex justify-center items-center cursor-pointer">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" class="fill-current">
-                <path
-                  d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"
-                />
-              </svg>
-            </div>
+        <draggable
+          v-model="rows"
+          :item-key="(el, i) => (el && el[0] && el[0].attribute) || i"
+          handle=".vue-draggable-handle"
+        >
+          <template #item="{ element, index }">
+            <div class="simple-repeatable-row o1-flex o1-py-2 o1-pl-3 o1-relative o1-rounded-md">
+              <div class="vue-draggable-handle o1-flex o1-justify-center o1-items-center o1-cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" class="fill-current">
+                  <path
+                    d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"
+                  />
+                </svg>
+              </div>
 
-            <div class="simple-repeatable-fields-wrapper w-full flex">
-              <component
-                v-for="(rowField, j) in row"
-                :key="j"
-                :is="`form-${rowField.component}`"
-                :field="rowField"
-                :errors="repeatableValidation.errors"
-                :unique-id="getUniqueId(field, rowField)"
-                class="mr-3"
-              />
-            </div>
-
-            <div
-              class="delete-icon flex justify-center items-center cursor-pointer"
-              @click="deleteRow(i)"
-              v-if="canDeleteRows"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="fill-current">
-                <path
-                  d="M8 6V4c0-1.1.9-2 2-2h4a2 2 0 012 2v2h5a1 1 0 010 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V8H3a1 1 0 110-2h5zM6 8v12h12V8H6zm8-2V4h-4v2h4zm-4 4a1 1 0 011 1v6a1 1 0 01-2 0v-6a1 1 0 011-1zm4 0a1 1 0 011 1v6a1 1 0 01-2 0v-6a1 1 0 011-1z"
+              <div class="simple-repeatable-fields-wrapper o1-w-full o1-flex">
+                <component
+                  v-for="(rowField, j) in element"
+                  :key="j"
+                  :is="`form-${rowField.component}`"
+                  :field="rowField"
+                  :errors="repeatableValidation.errors"
+                  :unique-id="getUniqueId(field, rowField)"
+                  class="o1-mr-3"
+                  :style="{ maxWidth: rowField.nsrWidth || null }"
                 />
-              </svg>
+              </div>
+
+              <div
+                class="delete-icon o1-flex o1-justify-center o1-items-center o1-cursor-pointer o1-fill-current hover:o1-fill-red-600"
+                @click="deleteRow(index)"
+                v-if="canDeleteRows"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  class="o1-fill-inherit"
+                >
+                  <path
+                    d="M8 6V4c0-1.1.9-2 2-2h4a2 2 0 012 2v2h5a1 1 0 010 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V8H3a1 1 0 110-2h5zM6 8v12h12V8H6zm8-2V4h-4v2h4zm-4 4a1 1 0 011 1v6a1 1 0 01-2 0v-6a1 1 0 011-1zm4 0a1 1 0 011 1v6a1 1 0 01-2 0v-6a1 1 0 011-1z"
+                  />
+                </svg>
+              </div>
             </div>
-          </div>
+          </template>
         </draggable>
 
-        <button
+        <DefaultButton
           v-if="canAddRows"
           @click="addRow"
           class="add-button btn btn-default btn-primary"
           :class="{ 'delete-width': canDeleteRows, 'mt-3': rows.length }"
           type="button"
         >
-          {{ __('simpleRepeatable.addRow') }}
-        </button>
+          {{ field.addRowLabel }}
+        </DefaultButton>
       </div>
     </template>
-  </default-field>
+  </DefaultField>
 </template>
 
 <script>
 import Draggable from 'vuedraggable';
 import { Errors } from 'form-backend-validation';
-import { FormField, HandlesValidationErrors } from 'laravel-nova';
+import { HandlesValidationErrors, DependentFormField } from 'laravel-nova';
 import HandlesRepeatable from '../mixins/HandlesRepeatable';
+import _set from 'lodash/set';
 
 export default {
-  mixins: [FormField, HandlesValidationErrors, HandlesRepeatable],
+  mixins: [HandlesValidationErrors, HandlesRepeatable, DependentFormField],
 
   components: { Draggable },
 
@@ -92,6 +115,7 @@ export default {
   methods: {
     fill(formData) {
       const ARR_REGEX = () => /\[\d+\]$/g;
+
       const allValues = [];
 
       for (const row of this.rows) {
@@ -130,7 +154,7 @@ export default {
             if (!rowValues[key]) rowValues[key] = [];
             rowValues[key].push(normalizedValue);
           } else {
-            rowValues[key] = normalizedValue;
+            _set(rowValues, key, normalizedValue);
           }
         }
 
@@ -150,6 +174,12 @@ export default {
   },
 
   computed: {
+    extraAttributes() {
+      const attrs = this.currentField.extraAttributes;
+      return {
+        ...attrs,
+      };
+    },
     repeatableValidation() {
       const fields = this.fields;
       const errors = this.errors.errors;
@@ -194,14 +224,14 @@ export default {
     },
 
     canAddRows() {
-      if (!this.field.canAddRows) return false;
-      if (!!this.field.maxRows) return this.rows.length < this.field.maxRows;
+      if (!this.currentField.canAddRows) return false;
+      if (!!this.currentField.maxRows) return this.rows.length < this.currentField.maxRows;
       return true;
     },
 
     canDeleteRows() {
-      if (!this.field.canDeleteRows) return false;
-      if (!!this.field.minRows) return this.rows.length > this.field.minRows;
+      if (!this.currentField.canDeleteRows) return false;
+      if (!!this.currentField.minRows) return this.rows.length > this.currentField.minRows;
       return true;
     },
   },
@@ -210,14 +240,14 @@ export default {
 
 <style lang="scss">
 .simple-repeatable.form-field {
-  .simple-repeatable-header-row {
-    width: 100%;
-  }
-
   .simple-repeatable-row {
     width: calc(100% + 68px);
 
     > .simple-repeatable-fields-wrapper {
+      .translatable-field {
+        padding-top: 0 !important;
+      }
+
       > *,
         // Improve compatibility with nova-translatable
       .translatable-field > div:not(:first-child) > div {
@@ -225,6 +255,8 @@ export default {
         flex-shrink: 0;
         min-width: 0;
         border: none !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
 
         // Hide name
         > *:nth-child(1):not(:only-child) {
@@ -261,15 +293,6 @@ export default {
       width: 36px;
       height: 36px;
       margin-right: 10px;
-      cursor: pointer;
-
-      &:hover {
-        cursor: pointer;
-
-        > svg > path {
-          fill: var(--danger);
-        }
-      }
     }
 
     .vue-draggable-handle {
